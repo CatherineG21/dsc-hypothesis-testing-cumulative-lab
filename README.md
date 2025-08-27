@@ -114,7 +114,8 @@ This feature is supposed to represent the number of days with bad physical healt
 ```python
 # Replace None with appropriate text
 """
-None
+If the values represent days out of the past 30, they should range from 0 to 30. However, many fall in the 70–90 range, making the mean invalid since it exceeds the maximum possible value of 30.
+
 """
 ```
 
@@ -126,8 +127,14 @@ Look in the data dictionary, page 17, to understand what is happening with these
 
 
 ```python
-# Your code here
-```
+# Code 88 means None, replace it with 0
+df.loc[df["PHYSHLTH"]==88, "PHYSHLTH"] = 0
+
+# Now, only keep records where PHYSHLTH is <= 30
+# (making a copy to avoid future SettingWithCopyWarning messages)
+df = df[df["PHYSHLTH"] <= 30].copy()
+
+df```
 
 Run the code below to ensure you have the correct, cleaned dataframe:
 
@@ -176,7 +183,8 @@ Look in the data dictionary, pages 2-3, to determine which states map onto which
 
 
 ```python
-# Your code here
+df["_STATE"].replace({36: "New York", 34: "New Jersey", 9: "Connecticut"}, inplace=True)
+df
 ```
 
 Below, we check the values:
@@ -224,7 +232,7 @@ Looking at the plot above, does the distribution seem to differ by state?
 ```python
 # Replace None with appropriate text
 """
-None
+Not exactly—the states appear to have roughly the same distribution of unhealthy days.
 """
 ```
 
@@ -246,7 +254,7 @@ Identify which of the statistical tests you have learned is the most appropriate
 ```python
 # Replace None with appropriate text
 """
-None
+ANOVA is the best choice because we are comparing a numeric variable (PHYSHLTH) across three categories. A t-test would work for two categories, but with three, ANOVA is more appropriate
 """
 ```
 
@@ -256,7 +264,9 @@ Now, identify the null and alternative hypotheses:
 ```python
 # Replace None with appropriate text
 """
-None
+Null hypothesis: the means of PHYSHLTH are the same across states
+
+Alternative hypothesis: the means of PHYSHLTH are not the same across states
 """
 ```
 
