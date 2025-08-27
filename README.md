@@ -289,7 +289,8 @@ Interpret the results of this statistical test below. What is the calculated p-v
 ```python
 # Replace None with appropriate text
 """
-None
+We rejected the null hypothesis since the p-value (PR(>F)) is well below 0.05. Although state averages are close (around 3–4 unhealthy days per month), the large sample size shows a statistically significant difference. Therefore, the business should further explore why Connecticut reports the best health and New Jersey the worst
+
 """
 ```
 
@@ -311,7 +312,13 @@ In the cell below, modify `df` so that we have dropped all records where the `RE
 
 
 ```python
-# Your code here
+# Replace codes with labels
+df["RENTHOM1"].replace({1: "Own", 2: "Rent"}, inplace=True)
+
+# Only keep records with those labels
+df = df[df["RENTHOM1"].isin(["Own", "Rent"])].copy()
+
+df
 ```
 
 
@@ -337,8 +344,24 @@ Now, similar to the previous step, create a plot that shows the distribution of 
 
 
 ```python
-# Your code here
-```
+own = df.loc[df["RENTHOM1"] == "Own", "PHYSHLTH"]
+rent = df.loc[df["RENTHOM1"] == "Rent", "PHYSHLTH"]
+
+fig, ax = plt.subplots(figsize=(15, 6))
+
+ax.hist(
+    x=[own, rent],
+    label=["Own", "Rent"],
+    bins=range(32),
+    align="left",
+    density=True
+)
+
+ax.set_xlabel("PHYSHLTH")
+ax.set_ylabel("Proportion")
+ax.set_title("Distribution of PHYSHLTH by Home Ownership")
+
+ax.legend(title="Own or Rent Home");```
 
 Then run this code to find the averages:
 
@@ -354,7 +377,8 @@ Now, interpret the plot and averages. Does it seem like there a difference in th
 ```python
 # Replace None with appropriate text
 """
-None
+Although the distributions are similar, renters report more unhealthy days than homeowners. Owners more often report 0 unhealthy days, while renters report higher values overall, with mean unhealthy days of about 3.5 vs. 5.2.
+
 """
 ```
 
@@ -362,8 +386,14 @@ Now, choose and execute an appropriate statistical test. Make sure you describe 
 
 
 ```python
-# Your code here (create additional cells as needed)
+import scipy.stats as stats
+
+ttest_pvalue = stats.ttest_ind(rent, own, equal_var=False).pvalue / 2
+print("t-statistic p-value:", ttest_pvalue)
 ```
+"""
+Since the p-value is far below 0.05, we reject the null hypothesis and conclude that renters report more unhealthy days than homeowners. Further investigation could explore whether this difference is due to income levels or issues related to renting conditions.
+"""
 
 ## 4. Describe the Relationship between Chronic Sickness and Nicotine Use
 
@@ -379,8 +409,24 @@ If a record matches one or more of the above criteria, `NICOTINE_USE` should be 
 
 
 ```python
-# Your code here
+# Set everything to 0 initially
+df["NICOTINE_USE"] = 0
 
+# Make a mask to select the relevant values
+# (this separate variable is not necessary
+# but helps with readability)
+mask = (
+    # Has smoked at least 100 cigarettes
+    (df["SMOKE100"] == 1) |
+    # Uses chewing tobacco/snuff/snus every day or some days
+    (df["USENOW3"] == 1) |
+    (df["USENOW3"] == 2) |
+    # Has smoked an e-cigarette
+    (df["ECIGARET"] == 1)
+)
+
+# Set values to 1 where the mask condition is true
+df.loc[mask, "NICOTINE_USE"] = 1
 # Look at the distribution of values
 df["NICOTINE_USE"].value_counts(normalize=True)
 ```
@@ -391,8 +437,20 @@ In the cell below, create a new column of `df` called `CHRONIC`, which is 0 for 
 
 
 ```python
-# Your code here
+df["CHRONIC"] = (df["PHYSHLTH"] >= 15).apply(int)
 
+# Alternatives:
+
+# Helper function:
+# def is_chronic(record):
+#     if record["PHYSHLTH"] >= 15:
+#         return 1
+#     else:
+#         return 0
+# df["CHRONIC"] = df.apply(is_chronic, axis=1)
+
+# NumPy:
+# df["CHRONIC"] = np.where(df["PHYSHLTH"] >= 15, 1, 0)
 # View the distribution of the newly-created column
 df["CHRONIC"].value_counts()
 ```
@@ -434,9 +492,23 @@ Once again, it appears that there is a difference in health outcomes between the
 
 
 ```python
-# Your code here (create additional cells as needed)
-```
+# Reusing the contingency_table created above
+chi2, p, dof, expected = stats.chi2_contingency(contingency_table)
 
+print("chi-squared p-value:", p)
+
+results_table = pd.concat([pd.DataFrame(expected), contingency_table])
+results_table.columns.name = "NICOTINE_USE"
+
+results_table.index = ["0 (expected)", "1 (expected)", "0 (actual)", "1 (actual)"]
+results_table.index.name = "CHRONIC"
+results_table
+```
+"""
+The very small p-value allows us to reject the null hypothesis, showing a statistically significant relationship between nicotine use and chronic sickness. 
+Although non-users are the larger group overall, nicotine users make up the majority of those with chronic sickness. 
+This suggests a strong association, though not necessarily causation, between nicotine use and both long-term and short-term health problems.
+"""
 ## 5. Choose Your Own Question
 
 Now that you have investigated physical health and chronic sickness and their relationships with state, home ownership, and nicotine use, you will conduct a similar investigation with variables of your choosing.
@@ -447,8 +519,9 @@ Select an independent variable based on looking at the information in the data d
 
 
 ```python
-# Your code here (create additional cells as needed)
-```
+Choose an independent variable (e.g., income level), clean the data, and run an ANOVA since PHYSHLTH is numeric and the independent variable is categorical. 
+If the p-value is below 0.05, conclude that the variable significantly affects physical health; if not, 
+there’s no significant relationship```
 
 ## Conclusion
 
