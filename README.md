@@ -264,9 +264,9 @@ Now, identify the null and alternative hypotheses:
 ```python
 # Replace None with appropriate text
 """
-Null hypothesis: the means of PHYSHLTH are the same across states
+Null hypothesis: The means of PHYSHLTH are the same across states.
 
-Alternative hypothesis: the means of PHYSHLTH are not the same across states
+Alternative hypothesis: The means of PHYSHLTH are not the same across states.
 """
 ```
 
@@ -289,7 +289,9 @@ Interpret the results of this statistical test below. What is the calculated p-v
 ```python
 # Replace None with appropriate text
 """
-We rejected the null hypothesis since the p-value (PR(>F)) is well below 0.05. Although state averages are close (around 3–4 unhealthy days per month), the large sample size shows a statistically significant difference. Therefore, the business should further explore why Connecticut reports the best health and New Jersey the worst
+The calculated p-value is 8.8e-09, which is well below 0.05. The null hypothesis is rejected, indicating that PHYSHLTH varies significantly across states. Although the averages are close (around 3–4 days of poor health per month), the large sample size makes the differences statistically significant. 
+
+Connecticut reports the best health while New Jersey reports the worst. The business should explore reasons for these differences and tailor interventions by state.
 
 """
 ```
@@ -391,8 +393,12 @@ import scipy.stats as stats
 ttest_pvalue = stats.ttest_ind(rent, own, equal_var=False).pvalue / 2
 print("t-statistic p-value:", ttest_pvalue)
 ```
+t-statistic p-value: 5.394649320817826e-54
 """
-Since the p-value is far below 0.05, we reject the null hypothesis and conclude that renters report more unhealthy days than homeowners. Further investigation could explore whether this difference is due to income levels or issues related to renting conditions.
+The appropriate test is a two-sample t-test since PHYSHLTH (numeric) is compared across two groups (renters and homeowners). The null hypothesis states that renters and homeowners report the same mean number of unhealthy days while the alternative states that renters report more unhealthy days. 
+
+The p-value (5.39e-54) is far below 0.05, so the null hypothesis is rejected. Renters report significantly more unhealthy days than homeowners, suggesting further investigation into factors such as income or renting conditions.
+
 """
 
 ## 4. Describe the Relationship between Chronic Sickness and Nicotine Use
@@ -504,10 +510,11 @@ results_table.index = ["0 (expected)", "1 (expected)", "0 (actual)", "1 (actual)
 results_table.index.name = "CHRONIC"
 results_table
 ```
+chi-squared p-value: 1.4525226945056695e-51
 """
-The very small p-value allows us to reject the null hypothesis, showing a statistically significant relationship between nicotine use and chronic sickness. 
-Although non-users are the larger group overall, nicotine users make up the majority of those with chronic sickness. 
-This suggests a strong association, though not necessarily causation, between nicotine use and both long-term and short-term health problems.
+The Chi-squared test is appropriate since both variables are categorical. The null hypothesis states that nicotine use and chronic sickness are independent, while the alternative states that they are related. The p-value (1.45e-51) is far below 0.05, so the null hypothesis is rejected. 
+
+This indicates a significant association between nicotine use and chronic sickness, with users more likely to report chronic illness, though the test does not prove causation.
 """
 ## 5. Choose Your Own Question
 
@@ -519,9 +526,11 @@ Select an independent variable based on looking at the information in the data d
 
 
 ```python
-Choose an independent variable (e.g., income level), clean the data, and run an ANOVA since PHYSHLTH is numeric and the independent variable is categorical. 
-If the p-value is below 0.05, conclude that the variable significantly affects physical health; if not, 
-there’s no significant relationship```
+Choose an independent variable (e.g.income level), clean the data, and run an ANOVA since PHYSHLTH is numeric and the independent variable is categorical.
+
+If the p-value is below 0.05, conclude that the variable significantly affects physical health; if not, there’s no significant 
+relationship.
+```
 
 ## Conclusion
 
